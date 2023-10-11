@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
 
 namespace Logica.Models
 {
@@ -72,6 +73,14 @@ namespace Logica.Models
         public DataTable ListarActivos() 
         {
             DataTable R = new DataTable();
+
+            //hay que hacer instancia de la clase conexion 
+
+            Conexion MiCnn = new Conexion();
+            //como el SP para listar requiere un parámetro, hay que agregarlo a la lista
+            MiCnn.ListaDeParametros.Add(new SqlParameter("@VerActivos", true));
+
+            R = MiCnn.EjecutarSelect("SPUsuariosListar");
 
             return R;
         }

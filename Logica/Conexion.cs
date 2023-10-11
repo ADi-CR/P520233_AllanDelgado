@@ -9,7 +9,7 @@ using System.Configuration;
 
 namespace Logica
 {
-    public  class Conexion
+    public class Conexion
     {
         //contiene info de la cadena de conexión a usar por la clase.
         string CadenaDeConexion { get; set; }

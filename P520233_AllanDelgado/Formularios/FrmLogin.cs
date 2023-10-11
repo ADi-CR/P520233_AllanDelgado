@@ -31,5 +31,13 @@ namespace P520233_AllanDelgado.Formularios
         {
             Application.Exit();
         }
+
+        private void BtnIngresar_Click(object sender, EventArgs e)
+        {
+
+            Globales.ObjetosGlobales.MiFormularioPrincipal.Show();
+            this.Hide();
+
+        }
     }
 }
