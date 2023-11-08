@@ -87,6 +87,7 @@
             this.TxtBuscar.Name = "TxtBuscar";
             this.TxtBuscar.Size = new System.Drawing.Size(255, 20);
             this.TxtBuscar.TabIndex = 1;
+            this.TxtBuscar.TextChanged += new System.EventHandler(this.TxtBuscar_TextChanged);
             // 
             // CbVerActivos
             // 
@@ -99,6 +100,7 @@
             this.CbVerActivos.TabIndex = 2;
             this.CbVerActivos.Text = "Ver Usuarios Activos";
             this.CbVerActivos.UseVisualStyleBackColor = true;
+            this.CbVerActivos.CheckedChanged += new System.EventHandler(this.CbVerActivos_CheckedChanged);
             // 
             // DgvListaUsuarios
             // 
@@ -113,13 +115,13 @@
             this.ColCorreo,
             this.ColTelefono,
             this.ColRol});
-            this.DgvListaUsuarios.Location = new System.Drawing.Point(12, 48);
+            this.DgvListaUsuarios.Location = new System.Drawing.Point(12, 35);
             this.DgvListaUsuarios.MultiSelect = false;
             this.DgvListaUsuarios.Name = "DgvListaUsuarios";
             this.DgvListaUsuarios.ReadOnly = true;
             this.DgvListaUsuarios.RowHeadersVisible = false;
             this.DgvListaUsuarios.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DgvListaUsuarios.Size = new System.Drawing.Size(744, 216);
+            this.DgvListaUsuarios.Size = new System.Drawing.Size(744, 229);
             this.DgvListaUsuarios.TabIndex = 3;
             this.DgvListaUsuarios.VirtualMode = true;
             this.DgvListaUsuarios.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvListaUsuarios_CellClick);
@@ -300,6 +302,7 @@
             this.TxtUsuarioDireccion.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.TxtUsuarioDireccion.Size = new System.Drawing.Size(298, 75);
             this.TxtUsuarioDireccion.TabIndex = 15;
+            this.TxtUsuarioDireccion.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtUsuarioDireccion_KeyPress);
             // 
             // label9
             // 
@@ -316,6 +319,7 @@
             this.TxtUsuarioTelefono.Name = "TxtUsuarioTelefono";
             this.TxtUsuarioTelefono.Size = new System.Drawing.Size(366, 20);
             this.TxtUsuarioTelefono.TabIndex = 13;
+            this.TxtUsuarioTelefono.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtUsuarioTelefono_KeyPress);
             // 
             // label8
             // 
@@ -332,6 +336,7 @@
             this.TxtUsuarioContrasennia.Name = "TxtUsuarioContrasennia";
             this.TxtUsuarioContrasennia.Size = new System.Drawing.Size(264, 20);
             this.TxtUsuarioContrasennia.TabIndex = 11;
+            this.TxtUsuarioContrasennia.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtUsuarioContrasennia_KeyPress);
             // 
             // label7
             // 
@@ -366,6 +371,7 @@
             this.TxtUsuarioCorreo.Name = "TxtUsuarioCorreo";
             this.TxtUsuarioCorreo.Size = new System.Drawing.Size(366, 20);
             this.TxtUsuarioCorreo.TabIndex = 7;
+            this.TxtUsuarioCorreo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtUsuarioCorreo_KeyPress);
             // 
             // label5
             // 
@@ -382,6 +388,7 @@
             this.TxtUsuarioNombre.Name = "TxtUsuarioNombre";
             this.TxtUsuarioNombre.Size = new System.Drawing.Size(366, 20);
             this.TxtUsuarioNombre.TabIndex = 5;
+            this.TxtUsuarioNombre.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtUsuarioNombre_KeyPress);
             // 
             // label4
             // 
@@ -398,6 +405,7 @@
             this.TxtUsuarioCedula.Name = "TxtUsuarioCedula";
             this.TxtUsuarioCedula.Size = new System.Drawing.Size(366, 20);
             this.TxtUsuarioCedula.TabIndex = 3;
+            this.TxtUsuarioCedula.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtUsuarioCedula_KeyPress);
             // 
             // label3
             // 
@@ -462,6 +470,7 @@
             this.BtnEliminar.TabIndex = 7;
             this.BtnEliminar.Text = "ELIMINAR";
             this.BtnEliminar.UseVisualStyleBackColor = false;
+            this.BtnEliminar.Click += new System.EventHandler(this.BtnEliminar_Click);
             // 
             // BtnLimpiar
             // 
@@ -487,6 +496,7 @@
             this.BtnCerrar.TabIndex = 9;
             this.BtnCerrar.Text = "Cerrar";
             this.BtnCerrar.UseVisualStyleBackColor = false;
+            this.BtnCerrar.Click += new System.EventHandler(this.BtnCerrar_Click);
             // 
             // FrmUsuariosGestion
             // 
