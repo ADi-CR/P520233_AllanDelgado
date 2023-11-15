@@ -19,5 +19,9 @@ namespace P520233_AllanDelgado.Globales
         //en toda la aplicación
         public static Logica.Models.Usuario MiUsuarioGlobal = new Logica.Models.Usuario();  
 
+        //formulario de movimientos de productos 
+        public static Formularios.FrmMovimientosInventario 
+            MiFormularioMovimientos = new Formularios.FrmMovimientosInventario();
+
     }
 }
