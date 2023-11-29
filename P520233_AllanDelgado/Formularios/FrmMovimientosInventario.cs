@@ -13,9 +13,9 @@ namespace P520233_AllanDelgado.Formularios
     public partial class FrmMovimientosInventario : Form
     {
 
-        public Logica.Models.Movimiento MiMovimientoLocal {  get; set; }
+        public Logica.Models.Movimiento MiMovimientoLocal { get; set; }
 
-        public DataTable DtListaDetalleProductos {  get; set; }
+        public DataTable DtListaDetalleProductos { get; set; }
 
 
         public FrmMovimientosInventario()
@@ -30,8 +30,119 @@ namespace P520233_AllanDelgado.Formularios
 
         private void BtnAplicar_Click(object sender, EventArgs e)
         {
+            //debemos validar que estén los datos minimos necesarios 
+            if (ValidarMovimiento())
+            {
+                //una vez que tenemos los requisitos completos, se procede a "dar forma"
+                //al objeto de movimiento local. 
+
+                //primero los atributos simples y compuestos del encabezado. 
+                //luego a asignación de los detalles 
+                MiMovimientoLocal.Fecha = DtpFecha.Value.Date;
+                MiMovimientoLocal.Anotaciones = TxtAnotaciones.Text.Trim();
+
+                MiMovimientoLocal.MiTipo.MovimientoTipoID = Convert.ToInt32(CboxTipo.SelectedValue);
+                //a nivel de funcionalidad solo necesitamos el FK o sea el ID del tipo, 
+                //la parte del texto no es necesario. 
+
+                MiMovimientoLocal.MiUsuario = Globales.ObjetosGlobales.MiUsuarioGlobal;
+
+                //llenar la lista de detalles en el objeto local a partir de las filas
+                //del datatable de detalles. 
+                TrasladarDetalles();
+
+                //ahora que tenemos todo listo, procedemos a agregar el movimiento 
+                if (MiMovimientoLocal.Agregar())
+                {
+
+                    MessageBox.Show("El Movimiento se ha agregado correctamente",
+                        ":)", MessageBoxButtons.OK);
+
+                    //TODO: generar un reporte visual en Crystal Reports. 
+                    //se hará en clase reposición sabado 2-dic.2023
+
+
+
+
+                }
+
+
+
+            }
+
 
         }
+
+        private void TrasladarDetalles()
+        {
+
+            foreach (DataRow item in DtListaDetalleProductos.Rows)
+            {
+                //en cada iteración creamos un nuevo objeto de MovimientoDetalle, que luego
+                //será agregado a la lista de detalles del objeto local. 
+
+                Logica.Models.MovimientoDetalle NuevoDetalle = new Logica.Models.MovimientoDetalle();
+
+                NuevoDetalle.CantidadMovimiento = Convert.ToDecimal(item["CantidadMovimiento"]);
+
+                NuevoDetalle.Costo = Convert.ToDecimal(item["Costo"]);
+
+                NuevoDetalle.PrecioUnitario = Convert.ToDecimal(item["PrecioUnitario"]);
+
+                NuevoDetalle.SubTotal = Convert.ToDecimal(item["SubTotal"]);
+
+                NuevoDetalle.TotalIVA = Convert.ToDecimal(item["TotalIVA"]);
+
+                //atributo compuesto simple
+                NuevoDetalle.MiProducto.ProductoID = Convert.ToInt32(item["ProductoID"]);
+
+                //agregar el detalle nuevo a la lista del objeto local 
+                MiMovimientoLocal.Detalles.Add(NuevoDetalle);
+               
+            }
+
+        }
+
+
+        private bool ValidarMovimiento()
+        {
+            bool R = false;
+
+            if (DtpFecha.Value.Date <= DateTime.Now.Date &&
+                CboxTipo.SelectedIndex > -1 &&
+                DtListaDetalleProductos.Rows.Count > 0)
+            {
+                R = true;
+            }
+            else
+            {
+                if (DtpFecha.Value.Date > DateTime.Now.Date)
+                {
+                    MessageBox.Show("La fecha del movimiento no puede " +
+                        "ser superior a la fecha actual", "Error de Validación",
+                        MessageBoxButtons.OK);
+                    return false;
+                }
+
+                if (CboxTipo.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Debe seleccionar un tipo de movimiento",
+                        "Error de Validación", MessageBoxButtons.OK);
+                    return false; 
+                }
+
+                if (DtListaDetalleProductos == null || DtListaDetalleProductos.Rows.Count == 0)
+                {
+                    MessageBox.Show("No se puede procesar un movimiento sin detalles",
+                        "Error de Validación", MessageBoxButtons.OK);
+                    return false;
+                }
+            
+            }
+
+            return R;
+        }
+
 
         private void BtnCancelar_Click(object sender, EventArgs e)
         {
@@ -76,11 +187,11 @@ namespace P520233_AllanDelgado.Formularios
 
         private void CargarComboMovimientos()
         {
-            Logica.Models.UsuarioRol MiRol = new Logica.Models.UsuarioRol();
+            Logica.Models.MovimientoTipo MiTipo = new Logica.Models.MovimientoTipo();
 
             DataTable dt = new DataTable();
 
-            dt = MiRol.Listar();
+            dt = MiTipo.Listar();
 
             if (dt != null && dt.Rows.Count > 0)
             {
@@ -102,20 +213,47 @@ namespace P520233_AllanDelgado.Formularios
             //temporalmente el funcionamiento del form actual, hacer algo en 
             //el otro form y esperar una respuesta. 
 
-            Form FormDetalleProducto = new Formularios.FrmMovimientosInventarioDetalleProducto();   
+            Form FormDetalleProducto = new Formularios.FrmMovimientosInventarioDetalleProducto();
 
             DialogResult resp = FormDetalleProducto.ShowDialog();
 
             if (resp == DialogResult.OK)
             {
-                //TODO agregar la nueva linea de detalle 
 
+                DgvListaDetalle.DataSource = DtListaDetalleProductos;
+
+                Totalizar();
 
             }
 
+        }
 
+        private void Totalizar()
+        {
+            decimal TotalCosto = 0;
+            decimal TotalSubtotal = 0;
+            decimal TotalImpuestos = 0;
+            decimal Total = 0;
 
+            if (DtListaDetalleProductos != null && DtListaDetalleProductos.Rows.Count > 0)
+            {
+                foreach (DataRow item in DtListaDetalleProductos.Rows)
+                {
+                    decimal Cantidad = Convert.ToDecimal(item["CantidadMovimiento"]);
+                    TotalCosto += Convert.ToDecimal(item["Costo"]) * Cantidad;
+                    TotalSubtotal += Convert.ToDecimal(item["SubTotal"]) * Cantidad;
+                    TotalImpuestos += Convert.ToDecimal(item["TotalIVA"]) * Cantidad;
+                    Total += TotalSubtotal + TotalImpuestos;
+                }
+            }
+
+            LblTotalCosto.Text = string.Format("{0:C2}", TotalCosto);
+            LblTotalSubTotal.Text = string.Format("{0:C2}", TotalSubtotal);
+            LblTotalImpuestos.Text = string.Format("{0:C2}", TotalImpuestos);
+            LblTotalGranTotal.Text = string.Format("{0:C2}", Total);
 
         }
+
+
     }
 }
