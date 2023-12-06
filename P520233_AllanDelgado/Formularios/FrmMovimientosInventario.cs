@@ -33,43 +33,60 @@ namespace P520233_AllanDelgado.Formularios
             //debemos validar que estén los datos minimos necesarios 
             if (ValidarMovimiento())
             {
-                //una vez que tenemos los requisitos completos, se procede a "dar forma"
-                //al objeto de movimiento local. 
 
-                //primero los atributos simples y compuestos del encabezado. 
-                //luego a asignación de los detalles 
-                MiMovimientoLocal.Fecha = DtpFecha.Value.Date;
-                MiMovimientoLocal.Anotaciones = TxtAnotaciones.Text.Trim();
+                DialogResult respuesta = MessageBox.Show("¿Desea Continuar?", "???", MessageBoxButtons.YesNo);
 
-                MiMovimientoLocal.MiTipo.MovimientoTipoID = Convert.ToInt32(CboxTipo.SelectedValue);
-                //a nivel de funcionalidad solo necesitamos el FK o sea el ID del tipo, 
-                //la parte del texto no es necesario. 
-
-                MiMovimientoLocal.MiUsuario = Globales.ObjetosGlobales.MiUsuarioGlobal;
-
-                //llenar la lista de detalles en el objeto local a partir de las filas
-                //del datatable de detalles. 
-                TrasladarDetalles();
-
-                //ahora que tenemos todo listo, procedemos a agregar el movimiento 
-                if (MiMovimientoLocal.Agregar())
+                if (respuesta == DialogResult.Yes)
                 {
+                    //una vez que tenemos los requisitos completos, se procede a "dar forma"
+                    //al objeto de movimiento local. 
 
-                    MessageBox.Show("El Movimiento se ha agregado correctamente",
-                        ":)", MessageBoxButtons.OK);
+                    //primero los atributos simples y compuestos del encabezado. 
+                    //luego a asignación de los detalles 
+                    MiMovimientoLocal.Fecha = DtpFecha.Value.Date;
+                    MiMovimientoLocal.Anotaciones = TxtAnotaciones.Text.Trim();
 
-                    //TODO: generar un reporte visual en Crystal Reports. 
-                    //se hará en clase reposición sabado 2-dic.2023
+                    MiMovimientoLocal.MiTipo.MovimientoTipoID = Convert.ToInt32(CboxTipo.SelectedValue);
+                    //a nivel de funcionalidad solo necesitamos el FK o sea el ID del tipo, 
+                    //la parte del texto no es necesario. 
 
+                    MiMovimientoLocal.MiUsuario = Globales.ObjetosGlobales.MiUsuarioGlobal;
 
+                    //llenar la lista de detalles en el objeto local a partir de las filas
+                    //del datatable de detalles. 
+                    TrasladarDetalles();
 
+                    //ahora que tenemos todo listo, procedemos a agregar el movimiento 
+                    if (MiMovimientoLocal.Agregar())
+                    {
+
+                        MessageBox.Show("El Movimiento se ha agregado correctamente",
+                            ":)", MessageBoxButtons.OK);
+
+                        //GENERAR REPORTE 
+                        //1. crear un objeto de tipo documento 
+                        CrystalDecisions.CrystalReports.Engine.ReportDocument MiReporte = new CrystalDecisions.CrystalReports.Engine.ReportDocument();
+
+                        //2. Crear objeto del reporte que se quiere usar 
+                        MiReporte = new Reportes.RptMovimiento();
+
+                        //3. Llamar a la función que extrae los datos de la base de datos 
+                        MiReporte = MiMovimientoLocal.Imprimir(MiReporte);
+
+                        //4. Dibujar el reporte en pantalla 
+                        FrmVisualizadorReportes MiVisualizador = new FrmVisualizadorReportes();
+
+                        MiVisualizador.CrvVisualizador.ReportSource = MiReporte;
+
+                        MiVisualizador.Show();
+
+                        //TODO: Limpiar formulario 
+
+                    }
 
                 }
 
-
-
             }
-
 
         }
 
@@ -98,7 +115,7 @@ namespace P520233_AllanDelgado.Formularios
 
                 //agregar el detalle nuevo a la lista del objeto local 
                 MiMovimientoLocal.Detalles.Add(NuevoDetalle);
-               
+
             }
 
         }
@@ -128,7 +145,7 @@ namespace P520233_AllanDelgado.Formularios
                 {
                     MessageBox.Show("Debe seleccionar un tipo de movimiento",
                         "Error de Validación", MessageBoxButtons.OK);
-                    return false; 
+                    return false;
                 }
 
                 if (DtListaDetalleProductos == null || DtListaDetalleProductos.Rows.Count == 0)
@@ -137,7 +154,7 @@ namespace P520233_AllanDelgado.Formularios
                         "Error de Validación", MessageBoxButtons.OK);
                     return false;
                 }
-            
+
             }
 
             return R;

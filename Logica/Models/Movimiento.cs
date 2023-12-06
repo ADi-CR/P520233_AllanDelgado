@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
+using CrystalDecisions.CrystalReports.Engine;
+
+
 
 namespace Logica.Models
 {
@@ -49,6 +52,9 @@ namespace Logica.Models
             {
                 //ESPECIALIZADO
                 IDMovimientoRecienCreado = Convert.ToInt32(RetornoSPAgregar.ToString());
+
+                //asignamos al objeto el ID generado por el SP
+                this.MovimientoID = IDMovimientoRecienCreado;
 
                 foreach (MovimientoDetalle item in this.Detalles)
                 {
@@ -123,6 +129,35 @@ namespace Logica.Models
 
             return R;
         }
+
+
+        public ReportDocument Imprimir(ReportDocument document)
+        {
+            ReportDocument R = document;
+
+            //hacemos un objeto de tipo Crystal (la clase que creamos) 
+            Tools.Crystal ObjCrystal = new Tools.Crystal(R);
+
+            DataTable datos = new DataTable();
+
+            Conexion MyCnn = new Conexion();
+
+            MyCnn.ListaDeParametros.Add(new SqlParameter("@ID", this.MovimientoID));
+
+            datos = MyCnn.EjecutarSelect("SPMovimientoImprimir");
+
+            if (datos != null && datos.Rows.Count > 0)
+            {
+                ObjCrystal.Datos = datos;
+
+                R = ObjCrystal.GenerarReporte();
+
+            }
+
+            return R;
+        }
+
+
 
 
     }
